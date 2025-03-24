@@ -9,8 +9,6 @@ import java.util.*;
 
 /*
 TODO:
-    1. Дан список объектов произвольных типов. Найдите количество элементов списка, которые
-    являются объектами типа Human или его подтипами.
     2. Для объекта получить список имен его открытых методов.
     3. Для объекта получить список (в виде списка строк) имен всех его супер классов до класса
     Object включительно.
@@ -24,7 +22,7 @@ TODO:
     результатом типа void, а имя метода начинается с set.
  */
 public class ReflectionDemo {
-    public static void main(String[] args) throws ClassNotFoundException, NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException {
+    public static void main(String[] args) {
         Human productH_1 = new Human("Иван", "Иванов", "Иваныч", 25);
         Human productH_2 = new Human("Петр", "Иванов", "Олегович", 20);
 
@@ -35,19 +33,26 @@ public class ReflectionDemo {
 
         ReflectionDemo reflection = new ReflectionDemo();
 
-        Class<?> clazz = Class.forName("java.util.ArrayList");
+        Object list = null;
+        try {
+                list = Class.forName("java.util.ArrayList").getDeclaredConstructor().newInstance();
 
-        Constructor<?> constructor = clazz.getDeclaredConstructor();
+                Method addMethod = Class.forName("java.util.ArrayList").getMethod("add", Object.class);
 
-        Object list = constructor.newInstance();
+                addMethod.invoke(list, productH_1);
+                addMethod.invoke(list, productS_1);
+                addMethod.invoke(list, productD_1);
+        } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException |
+                 IllegalAccessException | NullPointerException e) {
+            throw new RuntimeException(e);
+        }
+        finally
+        {
+            System.out.println(list);
+            System.out.println("Кол-во объектов типа Human и его производных: "+reflection.countHumans((List<?>) list));
+        }
 
-        Method addMethod = clazz.getMethod("add",Object.class);
-
-        addMethod.invoke(list,productD_1);
-
-        
-
-        System.out.println(list);
+        System.out.println(reflection.getNameMethods(productD_1));
 
     }
     int countHumans(List<?> list)
@@ -69,5 +74,20 @@ public class ReflectionDemo {
         return counter;
     }
 
+    List<String> getNameMethods(Object obj)
+            /*
+            TODO: Для объекта получить список имен его открытых методов.
+            */
+    {
+        List<String> test = new ArrayList<>();
 
+        Method[] methods = obj.getClass().getMethods();
+
+        for (Method i : methods)
+        {
+            test.add(i.getName());
+        }
+
+        return test;
+    }
 }

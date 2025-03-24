@@ -20,6 +20,14 @@ public class Dog
         this.name = name;
     }
 
+    private void setAge(int age)
+    {
+        this.age = age;
+    }
+    public void printAgeName()
+    {
+        System.out.println(name+age);
+    }
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof Dog dog)) return false;
