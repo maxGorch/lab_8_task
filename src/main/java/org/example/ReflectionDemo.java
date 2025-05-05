@@ -9,7 +9,6 @@ import java.util.*;
 
 /*
 TODO:
-    2. Для объекта получить список имен его открытых методов.
     3. Для объекта получить список (в виде списка строк) имен всех его супер классов до класса
     Object включительно.
     4. *Напишите интерфейс Executable с методом void execute();
@@ -29,44 +28,39 @@ public class ReflectionDemo {
         Student productS_1 = new Student("Василий", "Грекович", "Кириллович", 25, "ФЦТК");
         Student productS_2 = new Student("Роман", "Гнусарев", "Викторович", 25, "ФЦТК");
 
-        Dog productD_1 = new Dog(4,"Шарик");
+        Dog productD_1 = new Dog(4, "Шарик");
 
         ReflectionDemo reflection = new ReflectionDemo();
 
         Object list = null;
         try {
-                list = Class.forName("java.util.ArrayList").getDeclaredConstructor().newInstance();
+            list = Class.forName("java.util.ArrayList").getDeclaredConstructor().newInstance();
 
-                Method addMethod = Class.forName("java.util.ArrayList").getMethod("add", Object.class);
+            Method addMethod = Class.forName("java.util.ArrayList").getMethod("add", Object.class);
 
-                addMethod.invoke(list, productH_1);
-                addMethod.invoke(list, productS_1);
-                addMethod.invoke(list, productD_1);
+            addMethod.invoke(list, productH_1);
+            addMethod.invoke(list, productS_1);
+            addMethod.invoke(list, productD_1);
         } catch (ClassNotFoundException | InvocationTargetException | NoSuchMethodException | InstantiationException |
                  IllegalAccessException | NullPointerException e) {
             throw new RuntimeException(e);
-        }
-        finally
-        {
+        } finally {
             System.out.println(list);
-            System.out.println("Кол-во объектов типа Human и его производных: "+reflection.countHumans((List<?>) list));
+            System.out.println("Кол-во объектов типа Human и его производных: " + reflection.countHumans((List<?>) list));
         }
 
         System.out.println(reflection.getNameMethods(productD_1));
-
     }
-    int countHumans(List<?> list)
+
+    public int countHumans(List<?> list)
         /*
          TODO: 1. Дан список объектов произвольных типов.
           Найдите количество элементов списка, которые являются объектами типа Human или его подтипами.
-        */
-    {
+        */ {
         int counter = 0;
 
-        for (Object i: list)
-        {
-            if(i instanceof Human)
-            {
+        for (Object i : list) {
+            if (i instanceof Human) {
                 counter++;
             }
         }
@@ -74,20 +68,37 @@ public class ReflectionDemo {
         return counter;
     }
 
-    List<String> getNameMethods(Object obj)
+    public List<String> getNameMethods(Object obj)
             /*
-            TODO: Для объекта получить список имен его открытых методов.
-            */
-    {
+            TODO: 2. Для объекта получить список имен его открытых методов.
+            */ {
         List<String> test = new ArrayList<>();
 
         Method[] methods = obj.getClass().getMethods();
 
-        for (Method i : methods)
-        {
+        for (Method i : methods) {
             test.add(i.getName());
         }
 
         return test;
+    }
+
+    public List<String> getListSuperClass(Object obj)
+        /*
+    TODO: 3. Для объекта получить список (в виде списка строк)
+     имен всех его супер классов до класса Object включительно.
+    */ {
+        if (obj == null) {
+            throw new IllegalArgumentException();
+        }
+        List<String> result = new ArrayList<>();
+
+        Class<?> obSuper = obj.getClass();
+        while (obSuper != null) {
+            result.add(obSuper.getName());
+            obSuper = obSuper.getSuperclass();
+        }
+
+        return result;
     }
 }
